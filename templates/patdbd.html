@@ -25,7 +25,7 @@
                         <a class="nav-link" href="/patient/edit">Edit Profile</a>
                     </li>
                     <li class="nav-item">
-                        <span class="navbar-text text-white me-3">Welcome, {{ session.patient_name }}</span>
+                        <a class="nav-link text-white me-3">Welcome, {{ session.patient_name }}</a>
                     </li>
                     <li class="nav-item">
                         <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
@@ -73,7 +73,7 @@
                     {% if coming %}
                         {% for appt in coming %}
                         <tr>
-                            <td>{{ appt[0] }}</td>
+                            <td>{{ loop.index }}</td>
                             <td>{{ appt[1] }}</td>
                             <td>{{ appt[2] }}</td>
                             <td>{{ appt[3] }}</td>
