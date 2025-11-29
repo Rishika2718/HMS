@@ -6,7 +6,7 @@ from datetime import datetime
 from models.patient import regpat, patlogin, updpat, viewpat, listdept, canappt, getpat, searchdoc,searchpat
 from models.doctor import doclogin, addavail, getavail, docappt, statusupdate, addpattmt, todayappt, weekappt, s_doc, patdet
 from models.admin import adminlog, dashboard, view_appt, search_doc, searchpat, add_doc, update_doc, viewdoc, view_pat, blacklistpatient, update_pat, delete_doc, getpatient
-from models.appointment import slotbook, bookappt
+from models.appointment import slotbook, bookappt, cancelappt
 
 app = Flask(__name__)
 app.secret_key = '12345'
@@ -89,7 +89,7 @@ def canpat(app_id):
     if 'patient_id' not in session:
         return redirect(url_for('patlog'))
     
-    result = canappt(app_id)
+    result = cancelappt(app_id)
     flash(result)
     return redirect(url_for('patdashbd'))
 

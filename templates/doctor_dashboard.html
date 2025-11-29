@@ -10,7 +10,9 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-success">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">🏥 HMS Doctor Portal</a>
-            <div class="d-flex">
+            <div class="navbar-nav ms-auto">
+                <a href="/doctor/availability" class="btn btn-outline-light btn-sm me-2">Set Availability</a>
+                <a href="/doctor/my_patients" class="btn btn-outline-light btn-sm me-2">My Patients</a>
                 <span class="navbar-text text-white me-3">Welcome, {{ session.doctor_name }}</span>
                 <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
             </div>
@@ -71,7 +73,11 @@
                         {% for appt in today %}
                         <tr>
                             <td>{{ appt[0] }}</td>
-                            <td>{{ appt[1] }}</td>
+                            <td>
+                                <a href="/doctor/patient_history/{{ appt[1] }}" class="text-decoration-none">
+                                    {{ appt[1] }}
+                                </a>
+                            </td>
                             <td>{{ appt[2] }}</td>
                             <td>{{ appt[3] }}</td>
                             <td><span class="badge bg-primary">{{ appt[4] }}</span></td>
@@ -169,6 +175,7 @@
                         <th>Date</th>
                         <th>Time</th>
                         <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -188,11 +195,14 @@
                                     <span class="badge bg-danger">{{ appt[4] }}</span>
                                 {% endif %}
                             </td>
+                            <td>
+                                <a href="/doctor/patient_history/{{ appt[1] }}" class="btn btn-sm btn-info">View History</a>
+                            </td>
                         </tr>
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="5" class="text-center">No appointments found</td>
+                            <td colspan="6" class="text-center">No appointments found</td>
                         </tr>
                     {% endif %}
                 </tbody>
