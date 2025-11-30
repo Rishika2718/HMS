@@ -10,12 +10,16 @@
         {% if results %}
         <table class="table table-striped table-bordered">
             <thead class="table-dark">
-                <tr><th>ID</th><th>Name</th><th>Mobile</th><th>Email</th><th>Gender</th><th>Blood Group</th></tr>
+                <tr><th>ID</th><th>Name</th><th>Mobile</th><th>Email</th><th>Gender</th><th>Blood Group</th><th>Action</th>
             </thead>
             <tbody>
                 {% for p in results %}
-                <tr><td>{{ p[0] }}</td><td>{{ p[1] }}</td><td>{{ p[2] }}</td><td>{{ p[3] }}</td><td>{{ p[4] }}</td><td>{{ p[8] }}</td></tr>
+                <tr><td>{{ p[0] }}</td><td>{{ p[1] }}</td><td>{{ p[2] }}</td><td>{{ p[3] }}</td><td>{{ p[4] }}</td><td>{{ p[8] }}</td>
                 {% endfor %}
+                <td>
+                <a href="/admin/search_patient" class="btn btn-sm btn-danger" 
+                 onclick="return confirm('Are you sure you want to delete this patient?')"> Delete</a>
+                </td></tr>
             </tbody>
         </table>
         {% else %}

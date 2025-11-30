@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 import json
 from datetime import datetime
 
-from models.patient import regpat, patlogin, updpat, viewpat, listdept, canappt, getpat, searchdoc,searchpat
+from models.patient import regpat, patlogin, updpat, viewpat, listdept, canappt, getpat, searchdoc,searchpat,listpats
 from models.doctor import doclogin, addavail, getavail, docappt, statusupdate, addpattmt, todayappt, weekappt, s_doc, patdet
 from models.admin import adminlog, dashboard, view_appt, search_doc, searchpat, add_doc, update_doc, view_doc, view_pat, blacklistpatient, update_pat, delete_doc, getpatient,listdocs
 from models.appointment import slotbook, bookappt, cancelappt
@@ -303,8 +303,6 @@ def edit_docmain():
 def edit_docselect():
     doctor_id = request.args.get('doctor_id')
     return redirect(url_for('adupdatedoc', doctor_id=doctor_id))
-
-
 @app.route('/admin/edit_doctor/<doctor_id>', methods=['GET', 'POST'])
 def adupdatedoc(doctor_id):
     if 'admin' not in session:
@@ -324,29 +322,34 @@ def adupdatedoc(doctor_id):
         return redirect(url_for('admindashboard'))
     return render_template('adminupddoc.html', doctor=doctor)
 
-@app.route('/admin/edit_patient/<patient_id>', methods=['GET', 'POST'])
+@app.route('/admin/edit_patient', methods=['GET'])
+def edit_patmain():
+    if 'admin' not in session:
+        return redirect(url_for('adlogin'))
+    all_pats = listpats()
+    return render_template('choosepat.html', patients=all_pats)
+@app.route('/admin/edit_patselect', methods=['GET'])
+def edit_patselect():
+    pat_id = request.args.get('patient_id')
+    return redirect(url_for('adupdatepat', patient_id=pat_id))
+@app.route('/admin/adupdatepat/<patient_id>', methods=['GET', 'POST'])
 def adupdatepat(patient_id):
     if 'admin' not in session:
         return redirect(url_for('adlogin'))
-    
     patient = getpatient(patient_id)
-    
     if request.method == 'POST':
-        name = request.form['name']
         mobile = request.form['mobile']
         email = request.form['email']
         address = request.form['address']
-        msg = update_pat(patient_id, name, mobile, email, address)
+        msg = update_pat(patient_id, mobile, email, address)
         flash(msg)
         return redirect(url_for('admindashboard'))
-    
-    return render_template('admin_edit_patient.html', patient=patient)
+    return render_template('adminupdpat.html', patient=patient)
 
 @app.route('/admin/delete_doctor/<doctor_id>')
 def adremovedoc(doctor_id):
     if 'admin' not in session:
         return redirect(url_for('adlogin'))
-
     msg = delete_doc(doctor_id)
     flash(msg)
     return redirect(url_for('admindashboard'))
@@ -355,7 +358,6 @@ def adremovedoc(doctor_id):
 def admin_delete_patient(patient_id):
     if 'admin' not in session:
         return redirect(url_for('adlogin'))
-
     msg = blacklistpatient(patient_id)
     flash(msg)
     return redirect(url_for('admindashboard'))
@@ -364,7 +366,6 @@ def admin_delete_patient(patient_id):
 def adgetdoc(doctor_id):
     if 'admin' not in session:
         return redirect(url_for('adlogin'))
-    
     doc = viewdoc(doctor_id)
     return render_template('adminviewdoc.html', doctor=doc)
 
@@ -372,7 +373,6 @@ def adgetdoc(doctor_id):
 def adgetpatient(patient_id):
     if 'admin' not in session:
         return redirect(url_for('adlogin'))
-    
     pat = view_pat(patient_id)
     return render_template('adminviepat.html', patient=pat)
 
@@ -380,19 +380,16 @@ def adgetpatient(patient_id):
 def adallappts():
     if 'admin' not in session:
         return redirect(url_for('adlogin'))
-    
     appts = view_appt()
     today = datetime.today().date()
     coming = []
     past = []
-    
     for a in appts:
         date = datetime.strptime(a[3], "%Y-%m-%d").date()
         if date >= today:
             coming.append(a)
         else:
             past.append(a)
-    
     return render_template("adminallappt.html", upcoming=coming, past=past)
 
 @app.route('/logout')

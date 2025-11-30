@@ -137,6 +137,14 @@ def listdept():
     conn.close()
     return data
 
+def listpats():
+    conn = sqlite3.connect("hospital_mgmt.db")
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM Patient")
+    data = cur.fetchall()
+    conn.close()
+    return data
+
 
 def docavail(doc_id):
     conn = sqlite3.connect("hospital_mgmt.db")
