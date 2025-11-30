@@ -57,10 +57,13 @@
 
         <div class="row mb-4">
             <div class="col-md-6">
-                <a href="/admin/add_doctor" class="btn btn-primary w-100 mb-2">➕ Add Doctor</a>
+                <a href="/admin/add_doctor" class="btn btn-primary w-100 mb-2">Add Doctor</a>
             </div>
             <div class="col-md-6">
-                <a href="/admin/all_appointments" class="btn btn-info w-100 mb-2">📅 View All Appointments</a>
+                <a href="/admin/edit_doctor" class="btn btn-primary w-100 mb-2">Update Doctor</a>
+            </div>
+            <div class="col-md-12">
+                <a href="/admin/all_appointments" class="btn btn-info w-100 mb-2">View All Appointments</a>
             </div>
         </div>
 
@@ -103,7 +106,7 @@
                 <h4>Search Doctor</h4>
                 <form method="GET" action="/admin/search_doctor">
                     <div class="input-group">
-                        <input type="text" name="q" class="form-control" placeholder="Search by name or department">
+                        <input type="text" name="q" class="form-control" placeholder="Search by name or department" required>
                         <button class="btn btn-primary" type="submit">🔍 Search</button>
                     </div>
                 </form>
@@ -112,7 +115,7 @@
                 <h4>Search Patient</h4>
                 <form method="GET" action="/admin/search_patient">
                     <div class="input-group">
-                        <input type="text" name="q" class="form-control" placeholder="Search by name or ID">
+                        <input type="text" name="q" class="form-control" placeholder="Search by name or ID" required>
                         <button class="btn btn-success" type="submit">🔍 Search</button>
                     </div>
                 </form>

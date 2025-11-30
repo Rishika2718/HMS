@@ -817,6 +817,13 @@ def add_doc(doc_id, dname, mno, email, timings, did):
     conn.close()
     return result
 
+def listdocs():
+    conn = sqlite3.connect("hospital_mgmt.db")
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM Doctor")
+    d = cur.fetchall()
+    conn.close()
+    return d
 
 def update_doc(doc_id, new_dname=None, new_mno=None, new_email=None, new_timings=None, new_did=None):
     conn = sqlite3.connect('hospital_mgmt.db')
@@ -864,25 +871,24 @@ def delete_doc(doc_id):
     conn.close()
     return result
 
-def search_doc(kword):
+def search_doc(kwd):
     conn = sqlite3.connect('hospital_mgmt.db')
     cur = conn.cursor()
     cur.execute("""
-        SELECT doc_id, DName, Email, Timings, DeptName 
-        FROM Doctor 
+        SELECT Doctor.doc_id, Doctor.DName, Doctor.Email, Doctor.DMobileNumber, Doctor.Timings, Department.DeptName
+        FROM Doctor
         JOIN Department ON Doctor.Dept_id = Department.Dept_id
-        WHERE DName LIKE ? OR DeptName LIKE ? OR doc_id LIKE ?
-    """, (f"%{kword}%", f"%{kword}%",  f"%{kword}%"))
-
-    result = cur.fetchall()
+        WHERE Department.Dept_id=? OR DeptName=?""",(kwd,kwd))
+    r = cur.fetchall()
     conn.close()
-    return result
+    return r
 
-def viewdoc(doc_id):
+
+def view_doc(doc_id):
     conn = sqlite3.connect('hospital_mgmt.db')
     cur = conn.cursor()
     cur.execute("""
-        SELECT Doctor.doc_id, Doctor.DName, Doctor.Email, Doctor.DMobileNumber, Department.Dept_id
+        SELECT Doctor.doc_id, Doctor.DName, Doctor.Email, Doctor.DMobileNumber, Doctor.Timings,Department.Dept_id
         FROM Doctor
         JOIN Department ON Doctor.Dept_id = Department.Dept_id
         WHERE Doctor.doc_id = ?

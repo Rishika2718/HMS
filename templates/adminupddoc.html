@@ -2,45 +2,69 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Edit Doctor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Doctor</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-light">
+
     <div class="container mt-5">
-        <div class="card shadow">
-            <div class="card-header bg-warning"><h3>Edit Doctor</h3></div>
-            <div class="card-body">
-                {% if doctor %}
-                <form method="POST">
-                    <div class="mb-3">
-                        <label>Name</label>
-                        <input type="text" name="name" value="{{ doctor[1] }}" class="form-control">
+
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h4>Update Doctor</h4>
                     </div>
-                    <div class="mb-3">
-                        <label>Email</label>
-                        <input type="email" name="email" value="{{ doctor[2] }}" class="form-control">
+
+                    <div class="card-body">
+
+                        <form action="{{ url_for('adupdatedoc', doctor_id=doctor['id']) }}" method="POST">
+
+                            <!-- Email -->
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="email" value="{{ doctor['email'] }}" class="form-control" required>
+                            </div>
+
+                            <!-- Mobile -->
+                            <div class="mb-3">
+                                <label class="form-label">Mobile</label>
+                                <input type="text" name="mobile" value="{{ doctor['mobile'] }}" class="form-control" required>
+                            </div>
+
+                            <!-- Department -->
+                            <div class="mb-3">
+                                <label class="form-label">Department</label>
+                                <select name="department" class="form-control" required>
+                                    <option value="{{ doctor['department'] }}" selected>{{ doctor['department'] }}</option>
+                                    <option value="Cardiology">Cardiology</option>
+                                    <option value="Neurology">Neurology</option>
+                                    <option value="Orthopedics">Orthopedics</option>
+                                    <option value="Dermatology">Dermatology</option>
+                                    <option value="Pediatrics">Pediatrics</option>
+                                </select>
+                            </div>
+
+                            <!-- Timing -->
+                            <div class="mb-3">
+                                <label class="form-label">Timing</label>
+                                <input type="text" name="timing" value="{{ doctor['timing'] }}" class="form-control" required>
+                            </div>
+
+                            <!-- Submit -->
+                            <button type="submit" class="btn btn-primary w-100">Update</button>
+                        </form>
+
                     </div>
-                    <div class="mb-3">
-                        <label>Mobile</label>
-                        <input type="text" name="mobile" value="{{ doctor[3] }}" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label>Department</label>
-                        <input type="text" name="department" value="{{ doctor[4] }}" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label>Timings</label>
-                        <input type="text" name="timing" class="form-control" placeholder="10am-5pm">
-                    </div>
-                    <button class="btn btn-success w-100">Update</button>
-                    <a href="/admin/dashboard" class="btn btn-secondary w-100 mt-2">Back</a>
-                </form>
-                {% else %}
-                <p>Doctor not found</p>
-                {% endif %}
+                </div>
+
             </div>
         </div>
+
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

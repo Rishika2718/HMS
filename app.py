@@ -5,7 +5,7 @@ from datetime import datetime
 
 from models.patient import regpat, patlogin, updpat, viewpat, listdept, canappt, getpat, searchdoc,searchpat
 from models.doctor import doclogin, addavail, getavail, docappt, statusupdate, addpattmt, todayappt, weekappt, s_doc, patdet
-from models.admin import adminlog, dashboard, view_appt, search_doc, searchpat, add_doc, update_doc, viewdoc, view_pat, blacklistpatient, update_pat, delete_doc, getpatient
+from models.admin import adminlog, dashboard, view_appt, search_doc, searchpat, add_doc, update_doc, view_doc, view_pat, blacklistpatient, update_pat, delete_doc, getpatient,listdocs
 from models.appointment import slotbook, bookappt, cancelappt
 
 app = Flask(__name__)
@@ -85,7 +85,7 @@ def bookpat():
     return redirect(url_for('patdashbd'))
 
 @app.route('/patient/cancel/<int:app_id>')
-def canpat(app_id):
+def cancelappt(app_id):
     if 'patient_id' not in session:
         return redirect(url_for('patlog'))
     
@@ -237,14 +237,35 @@ def admindashboard():
     appts = view_appt()
     return render_template('admin_dashboard.html', doctors=dc, patients=pc, appointments=ac, appt_list=appts)
 
-@app.route('/admin/search_doctor', methods=['GET'])
-def asearchdoc():
+@app.route('/admin/search_doctor', methods=['GET', 'POST'])
+def search_doctor():
     if 'admin' not in session:
-        return redirect(url_for('adlogin'))
-    
-    q = request.args.get('q', '')
-    r = search_doc(q)
-    return render_template('adminsearchdoc.html', results=r)
+        return redirect(url_for('adlogin'))    
+    data = []
+    if request.method == 'POST':
+        d_id = request.form.get('doctor_id')
+        specialization = request.form.get('specialization')
+        if d_id:
+            doc = view_doc(d_id)
+            if doc:
+                data.append((doc[0], doc[1], doc[2], doc[3], doc[4],doc[5]))
+        elif specialization:
+            doctors = search_doc(specialization)
+            for d in doctors:
+                data.append((d[0], d[1], d[2], d[3], d[4],d[5]))
+    elif request.method == 'GET':
+        q = request.args.get('q', '').strip()
+        if q:
+            doc = view_doc(q)
+            if doc:
+                data.append((doc[0], doc[1], doc[2], doc[3], doc[4],doc[5]))
+            else:
+                ds = search_doc(q)
+                if ds:
+                    for d in ds:
+                        data.append((d[0], d[1], d[2], d[3], d[4],d[5]))
+    return render_template('adminsearchdoc.html', results=data)
+
 
 @app.route('/admin/search_patient', methods=['GET'])
 def asearchpat():
@@ -272,13 +293,26 @@ def adadddoc():
     
     return render_template('adminnewdoc.html')
 
+@app.route('/admin/edit_doctor', methods=['GET'])
+def edit_docmain():
+    if 'admin' not in session:
+        return redirect(url_for('adlogin'))
+    all_doctors = listdocs()
+    return render_template('choosedoc.html', doctors=all_doctors)
+@app.route('/admin/edit_doctorselect', methods=['GET'])
+def edit_docselect():
+    doctor_id = request.args.get('doctor_id')
+    return redirect(url_for('adupdatedoc', doctor_id=doctor_id))
+
+
 @app.route('/admin/edit_doctor/<doctor_id>', methods=['GET', 'POST'])
 def adupdatedoc(doctor_id):
     if 'admin' not in session:
         return redirect(url_for('adlogin'))
-    
-    doctor = viewdoc(doctor_id)
-    
+    doctor = view_doc(doctor_id)
+    if doctor is None:
+            flash("Doctor does not exist!", "danger")
+            return redirect(url_for('search_doctor'))
     if request.method == 'POST':
         name = request.form.get('name')
         email = request.form.get('email')
@@ -288,7 +322,6 @@ def adupdatedoc(doctor_id):
         msg = update_doc(doctor_id, name, mobile, email, timing, dept)
         flash(msg)
         return redirect(url_for('admindashboard'))
-
     return render_template('adminupddoc.html', doctor=doctor)
 
 @app.route('/admin/edit_patient/<patient_id>', methods=['GET', 'POST'])
