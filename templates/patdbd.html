@@ -16,6 +16,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
+                        <a class="nav-link" href="/patient/history">Treatment History</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/patient/departments">Departments</a>
                     </li>
                     <li class="nav-item">
@@ -140,6 +143,41 @@
                 </tbody>
             </table>
         </div>
+        <!-- Doctor Availability Section -->
+        <h3 class="mt-4">Doctor Availability (Next 7 Days)</h3>
+        <div class="table-responsive">
+             <table class="table table-striped table-bordered">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>Doctor Name</th>
+                        <th>Day</th>
+                        <th>Date</th>
+                        <th>Available Timings</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if availability %}
+                        {% for item in availability %}
+                    <tr>
+                        <td>{{ item.dname }}</td>
+                        <td>{{ item.day }}</td>
+                        <td>{{ item.date }}</td>
+                        <td>
+                            {% if item.slot == "Not Available" %}
+                                <span class="badge bg-danger">Not Available</span>
+                            {% else %}
+                                <span class="badge bg-success">{{ item.slot }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center">No doctor availability found</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
     </div>
 
     <!-- Book Appointment Modal -->

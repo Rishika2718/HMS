@@ -42,17 +42,12 @@ def updpat(current_id, patient_id, name=None, mobile=None, email=None, address=N
     if address:
         updates.append("Address = ?")
         params.append(address)
-    if blood_group:
-        updates.append("Blood_group = ?")
-        params.append(blood_group)
     if optional_contact:
         updates.append("Optional_Contact = ?")
         params.append(optional_contact)
-
     if not updates:
         conn.close()
         return "No changes provided."
-
     params.append(patient_id)
     sql = f"UPDATE Patient SET {', '.join(updates)} WHERE patient_id = ?"
     cur.execute(sql, tuple(params))
@@ -64,20 +59,18 @@ def searchdoc(dept=None, timing=None):
     conn = sqlite3.connect("hospital_mgmt.db")
     cur = conn.cursor()
     q = """
-        SELECT Doctor.doc_id, DName, Email, Timings, DeptName 
+        SELECT Doctor.doc_id, DName, DMobileNumber,Email, Timings, DeptName 
         FROM Doctor
         JOIN Department ON Doctor.Dept_id = Department.Dept_id
         WHERE 1=1
     """
     params = []
-
     if dept:
         q += " AND DeptName LIKE ?"
         params.append(f"%{dept}%")
     if timing:
         q += " AND Timings LIKE ?"
         params.append(f"%{timing}%")
-
     cur.execute(q, tuple(params))
     result = cur.fetchall()
     conn.close()
@@ -145,7 +138,6 @@ def listpats():
     conn.close()
     return data
 
-
 def docavail(doc_id):
     conn = sqlite3.connect("hospital_mgmt.db")
     cur = conn.cursor()
@@ -154,11 +146,27 @@ def docavail(doc_id):
     conn.close()
     if not data:
         return None
-
     name, jd = data
     timings = json.loads(jd)
-
     return {"dname": name, "avail": timings}
+import datetime
+
+def weekavail(timings):
+    days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    today_idx = datetime.datetime.now().weekday()   # 0 = Monday
+    result = []
+    for i in range(7):
+        day_idx = (today_idx + i) % 7
+        day_name = days[day_idx]
+        slot = timings.get(day_name, "Not Available")
+        date = (datetime.date.today() + datetime.timedelta(days=i)).strftime("%d-%m-%Y")
+        result.append({
+            "day": day_name,
+            "date": date,
+            "slot": slot
+        })
+    return result
+
 
 def searchpat(q):
     conn = sqlite3.connect("hospital_mgmt.db")
@@ -170,7 +178,6 @@ def searchpat(q):
     d = cur.fetchall()
     conn.close()
     return d
-
 from datetime import datetime
 
 def getpat(patient_id):

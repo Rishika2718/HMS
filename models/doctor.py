@@ -11,14 +11,12 @@ def doclogin(mobile, email):
 def s_doc(kword):
     conn = sqlite3.connect('hospital_mgmt.db')
     cur=conn.cursor()
-
     cur.execute("""
         SELECT doc_id, DName, Email, Timings, DeptName 
         FROM Doctor 
         JOIN Department ON Doctor.Dept_id = Department.Dept_id
         WHERE DName LIKE ? OR DeptName LIKE ? OR Dept_id LIKE ?
     """, (f"%{kword}%", f"%{kword}%",  f"%{kword}%"))
-
     result = cur.fetchall()
     conn.close()
     return result

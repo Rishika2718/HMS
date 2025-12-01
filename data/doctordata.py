@@ -21,5 +21,6 @@ departments = cursor.fetchall()
 print("\n=== Department Table ===")
 for dept in departments:
     print(dept)
-
+    
 conn.close()
+

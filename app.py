@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 import json
 from datetime import datetime
 
-from models.patient import regpat, patlogin, updpat, viewpat, listdept, canappt, getpat, searchdoc,searchpat,listpats
+from models.patient import regpat, patlogin, updpat, viewpat, listdept, canappt, getpat, searchdoc,searchpat,listpats,weekavail
 from models.doctor import doclogin, addavail, getavail, docappt, statusupdate, addpattmt, todayappt, weekappt, s_doc, patdet
 from models.admin import adminlog, dashboard, view_appt, search_doc, searchpat, add_doc, update_doc, view_doc, view_pat, blacklistpatient, update_pat, delete_doc, getpatient,listdocs
 from models.appointment import slotbook, bookappt, cancelappt
@@ -49,13 +49,11 @@ def patlog():
 def patdashbd():
     if 'patient_id' not in session:
         return redirect(url_for('patlog'))
-    
     pid = session.get('patient_id')
     all = viewpat(pid)
     coming = []
     past = []
     today = datetime.today().date()
-    
     for row in all:
         app_date = datetime.strptime(row[2], "%Y-%m-%d").date()
         status = row[4]
@@ -63,7 +61,6 @@ def patdashbd():
             coming.append(row)
         else:
             past.append(row)
-    
     return render_template("patdbd.html", coming=coming, past=past)
 
 @app.route('/patient/book', methods=['POST'])
@@ -71,15 +68,12 @@ def bookpat():
     pid = session.get('patient_id')
     if not pid:
         return redirect(url_for('patlog'))
-    
     doc_id = request.form['doc_id']
     date = request.form['date']
     time = request.form['time']
-    
     if slotbook(doc_id, date, time):
         flash("Slot already booked for this doctor")
         return redirect(url_for('patdashbd'))
-    
     msg = bookappt(pid, doc_id, date, time)
     flash(msg)
     return redirect(url_for('patdashbd'))
@@ -88,7 +82,6 @@ def bookpat():
 def cancelappt(app_id):
     if 'patient_id' not in session:
         return redirect(url_for('patlog'))
-    
     result = cancelappt(app_id)
     flash(result)
     return redirect(url_for('patdashbd'))
@@ -97,31 +90,39 @@ def cancelappt(app_id):
 def patientupd():
     if "patient_id" not in session:
         return redirect(url_for('patlog'))
-
     pid = session['patient_id']
     patient = getpat(pid)
-
     if request.method == 'POST':
         pname = request.form['name']
         pmobile = request.form['mobile']
         pemail = request.form['email']
         paddress = request.form['address']
-        poptional = request.form.get('optional', '')
+        poptional = request.form.get('optional')
         msg = updpat(pid, pid, pname, pmobile, pemail, paddress, poptional)
         flash(msg)
         return redirect(url_for('patdashbd'))
-    
-    return render_template('patient_edit.html', patient=patient)
+    return render_template('patupdate.html', patient=patient)
 
 @app.route('/patient/departments')
 def patient_departments():
     dts = listdept()
-    return render_template("patient_departments.html", departments=dts)
+    return render_template("patientdept.html", departments=dts)
 
 @app.route('/patient/doctors')
 def patdoc():
     doctors = searchdoc()
-    return render_template("patient_doctors.html", doctors=doctors)
+    return render_template("patientdoclist.html", doctors=doctors)
+
+@app.route('/admin/doctor_availability/<doc_id>')
+def doctor_availability(doc_id):
+    info = docavail(doc_id)   
+    if not info:
+        flash("Doctor not found")
+        return redirect(url_for('admindashboard'))
+    week = weekavail(info["avail"])
+    return render_template("doctor_availability.html",
+                           name=info["dname"],
+                           week=week)
 
 @app.route('/patient/search', methods=['GET'])
 def patsearch():
@@ -133,10 +134,9 @@ def patsearch():
 def patdetails():
     if "patient_id" not in session:
         return redirect(url_for('patlog'))
-    
     pid = session["patient_id"]
     history = viewpat(pid)
-    return render_template("patient_history.html", history=history)
+    return render_template("patienthistory.html", history=history)
 
 
 @app.route('/doctor/login', methods=['GET', 'POST'])
@@ -215,6 +215,7 @@ def doctor_view_patient_history(patient_id):
     history = patdet(patient_id)
     return render_template("doctor_view_patient_history.html", history=history)
 
+"""Admin"""
 @app.route('/admin/login', methods=['GET', 'POST'])
 def adlogin():
     if request.method == 'POST':
@@ -341,7 +342,8 @@ def adupdatepat(patient_id):
         mobile = request.form['mobile']
         email = request.form['email']
         address = request.form['address']
-        msg = update_pat(patient_id, mobile, email, address)
+        opcontact=request.form['opcontact']
+        msg = update_pat(patient_id, mobile, email, address,opcontact)
         flash(msg)
         return redirect(url_for('admindashboard'))
     return render_template('adminupdpat.html', patient=patient)
