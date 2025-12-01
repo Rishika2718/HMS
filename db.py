@@ -198,7 +198,7 @@ conn.execute("""
 INSERT INTO Department(Dept_id, DeptName, Description)
 VALUES ('GEN01','GENERAL','General Physician')
 """)
-conn.commit()
+
 
 # Check if doctor already exists by email to avoid duplicate entries
 cur.execute("SELECT * FROM Doctor WHERE Email = ?", ('dr.sulab@gmail.com',))

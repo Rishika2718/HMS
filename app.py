@@ -6,7 +6,7 @@ from datetime import datetime
 from models.patient import regpat, patlogin, updpat, viewpat, listdept, canappt, getpat, searchdoc,searchpat,listpats,weekavail
 from models.doctor import doclogin, addavail, getavail, docappt, statusupdate, addpattmt, todayappt, weekappt, s_doc, patdet
 from models.admin import adminlog, dashboard, view_appt, search_doc, searchpat, add_doc, update_doc, view_doc, view_pat, blacklistpatient, update_pat, delete_doc, getpatient,listdocs
-from models.appointment import slotbook, bookappt, cancelappt
+from models.appointment import slotbook, bookappt, cancelappt,changestatus
 
 app = Flask(__name__)
 app.secret_key = '12345'
@@ -120,7 +120,7 @@ def doctor_availability(doc_id):
         flash("Doctor not found")
         return redirect(url_for('admindashboard'))
     week = weekavail(info["avail"])
-    return render_template("doctor_availability.html",
+    return render_template("availability.html",
                            name=info["dname"],
                            week=week)
 
@@ -207,13 +207,12 @@ def docavail():
     current_avail = getavail(doc_id)
     return render_template('doctor_availability.html', availability=current_avail)
 
-@app.route('/doctor/patient_history/<patient_id>')
+@app.route('/doctor/my_patients')
 def doctor_view_patient_history(patient_id):
     if 'doctor_id' not in session:
         return redirect(url_for('doclog'))
-
     history = patdet(patient_id)
-    return render_template("doctor_view_patient_history.html", history=history)
+    return render_template("docpathistory.html", history=history)
 
 """Admin"""
 @app.route('/admin/login', methods=['GET', 'POST'])

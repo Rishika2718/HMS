@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient History</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">🏥 HMS - Doctor Panel</a>
+        <div class="d-flex">
+            <a href="{{ url_for('doctor_view_patient_history') }}" class="btn btn-outline-light btn-sm">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+
+    <h2 class="mb-3">Patient Medical History</h2>
+    <hr>
+
+    {% if history and history|length > 0 %}
+    
+    <table class="table table-hover table-bordered bg-white shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Appointment ID</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Diagnosis</th>
+                <th>Prescription</th>
+                <th>Follow Up</th>
+                <th>Notes</th>
+                <th>Cost</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for h in history %}
+            <tr>
+                <td>{{ h[0] }}</td>
+                <td>{{ h[2] }}</td>
+                <td>{{ h[3] }}</td>
+                <td>
+                    {% if h[4] == "Completed" %}
+                        <span class="badge bg-success">{{ h[4] }}</span>
+                    {% elif h[4] == "Booked" %}
+                        <span class="badge bg-primary">{{ h[4] }}</span>
+                    {% else %}
+                        <span class="badge bg-danger">{{ h[4] }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ h[5] if h[5] else '—' }}</td>
+                <td>{{ h[6] if h[6] else '—' }}</td>
+                <td>{{ h[7] if h[7] else '—' }}</td>
+                <td>{{ h[8] if h[8] else '—' }}</td>
+                <td>₹{{ h[9] if h[9] else '0' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% else %}
+
+    <div class="alert alert-info">
+        No medical history found for this patient.
+    </div>
+
+    {% endif %}
+
+    <a href="{{ url_for('doctor_dashboard') }}" class="btn btn-secondary mt-3">⬅ Back to Dashboard</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

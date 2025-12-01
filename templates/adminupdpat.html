@@ -29,6 +29,10 @@
                                 <label class="form-label">Address</label>
                                 <input type="address" name="address" value="{{ patient['address'] }}" class="form-control" required>
                             </div>
+                            <div class="mb-3">
+                                <label class="form-label">Optional contact</label>
+                                <input type="contact" name="conatct" value="{{ patient['optional_contact'] }}" class="form-control" required>
+                            </div>
                             <!-- Submit -->
                             <button type="submit" class="btn btn-primary w-100">Update</button>
                         </form>

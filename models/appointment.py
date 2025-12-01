@@ -99,3 +99,28 @@ def cancelappt(app_id):
     
     conn.close()
     return result
+
+def changestatus():
+    import sqlite3
+    from datetime import datetime
+    conn = sqlite3.connect("hms.db")
+    cur = conn.cursor()
+    now = datetime.now()
+    cur.execute("""
+        SELECT appointment_id, date, time 
+        FROM appointments 
+        WHERE status = 'Booked'
+    """)
+    rows = cur.fetchall()
+    for appt_id, date_str, time_str in rows:
+        appt_datetime = datetime.strptime(date_str + " " + time_str, "%Y-%m-%d %H:%M")
+
+        if appt_datetime < now:
+            cur.execute("""
+                UPDATE appointments
+                SET status = 'Completed'
+                WHERE appointment_id = ?
+            """, (appt_id,))
+    
+    conn.commit()
+    conn.close()
